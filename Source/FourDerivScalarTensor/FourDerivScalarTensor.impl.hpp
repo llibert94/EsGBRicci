@@ -89,7 +89,8 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_Omega_munu(
 
     // compute coupling and potential
     my_coupling_and_potential.compute_coupling_and_potential(
-        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi, dVdphi, vars, coords);
+        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi,
+        dVdphi, vars, coords);
 
     using namespace TensorAlgebra;
     const auto h_UU = compute_inverse_sym(vars.h);
@@ -164,7 +165,8 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_rho_and_Si(
 
     // compute coupling and potential
     my_coupling_and_potential.compute_coupling_and_potential(
-        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi, dVdphi, vars, coords);
+        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi,
+        dVdphi, vars, coords);
 
     using namespace TensorAlgebra;
     const auto h_UU = compute_inverse_sym(vars.h);
@@ -265,18 +267,20 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_rho_and_Si(
     data_t tr_covd2phi = vars.chi * compute_trace(covd2phi, h_UU);
 
     Tensor<1, data_t> Bvector;
-    data_t Bscalar = d2betadphi2 * (Vt + vars.Pi * vars.Pi) + 
-	    	dbetadphi * (tr_covd2phi + vars.Pi * vars.K);
-    FOR(i) 
-    { 
-	Bvector[i] = -d2betadphi2 * vars.Pi * d1.phi[i] - 
-		dbetadphi * (d1.Pi[i] + vars.K / 3. * d1.phi[i]);
-	FOR(j,k) Bvector[i] += -dbetadphi * h_UU[j][k] * vars.A[i][j] * d1.phi[k];
+    data_t Bscalar = d2betadphi2 * (Vt + vars.Pi * vars.Pi) +
+                     dbetadphi * (tr_covd2phi + vars.Pi * vars.K);
+    FOR(i)
+    {
+        Bvector[i] = -d2betadphi2 * vars.Pi * d1.phi[i] -
+                     dbetadphi * (d1.Pi[i] + vars.K / 3. * d1.phi[i]);
+        FOR(j, k)
+        Bvector[i] += -dbetadphi * h_UU[j][k] * vars.A[i][j] * d1.phi[k];
     }
 
     double G_factor = 8. * M_PI * m_G_Newton;
     out.rho = (out.rho - 2. * Bscalar) / (1. - 2. * G_factor * beta);
-    FOR(i) out.Si[i] = (out.Si[i] - 2. * Bvector[i]) / (1. - 2. * G_factor * beta);
+    FOR(i)
+    out.Si[i] = (out.Si[i] - 2. * Bvector[i]) / (1. - 2. * G_factor * beta);
 
     return out;
 }
@@ -307,7 +311,8 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_Sij_TF_and_S(
 
     // compute coupling and potential
     my_coupling_and_potential.compute_coupling_and_potential(
-        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi, dVdphi, vars, coords);
+        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi,
+        dVdphi, vars, coords);
 
     using namespace TensorAlgebra;
     const auto h_UU = compute_inverse_sym(vars.h);
@@ -510,8 +515,8 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_Sij_TF_and_S(
     Tensor<2, data_t> Omega_ij_TF_UU_over_chi2 =
         raise_all(Omega_ij_TF, h_UU); // raise all indexs
 
-    data_t Zbeta = M + 2. * tr_A2 + 2. / 3. * vars.K * vars.K + 
-	    		2. * one_over_lapse * (advec.K - tr_covd2lapse);
+    data_t Zbeta = M + 2. * tr_A2 + 2. / 3. * vars.K * vars.K +
+                   2. * one_over_lapse * (advec.K - tr_covd2lapse);
 
     // Gauss-Bonnet contribution for S
     data_t SGB = 4. / 3. * Omega * F +
@@ -550,7 +555,8 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_Sij_TF_and_S(
                      h_UU[k][l] * Omega_i[k] * (2. * Ni[l] + d1.K[l]));
         }
         // add quadratic terms
-        SijGB[i][j] += -8. * dfdphi * Mij_TF[i][j] * (dfdphi * RGB - dbetadphi * Zbeta) /
+        SijGB[i][j] += -8. * dfdphi * Mij_TF[i][j] *
+                       (dfdphi * RGB - dbetadphi * Zbeta) /
                        (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi));
     }
 
@@ -558,20 +564,26 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_Sij_TF_and_S(
     FOR(i, j) out.Sij_TF[i][j] += SijGB[i][j];
 
     Tensor<2, data_t> Btensor;
-    FOR(i,j) Btensor[i][j] = d2betadphi2 * d1.phi[i] * d1.phi[j] + 
-	    		dbetadphi / chi_regularised * (covd2phi_times_chi[i][j] + vars.Pi * 
-					(vars.A[i][j] + vars.K / 3. * vars.h[i][j]));
+    FOR(i, j)
+    Btensor[i][j] = d2betadphi2 * d1.phi[i] * d1.phi[j] +
+                    dbetadphi / chi_regularised *
+                        (covd2phi_times_chi[i][j] +
+                         vars.Pi * (vars.A[i][j] + vars.K / 3. * vars.h[i][j]));
 
     data_t Bscalar = vars.chi * compute_trace(Btensor, h_UU);
     data_t Bnn = d2betadphi2 * vars.Pi * vars.Pi - dbetadphi * advec.Pi;
-    FOR(i,j) Bnn += -dbetadphi * vars.chi * one_over_lapse * h_UU[i][j] * d1.lapse[i] * d1.phi[j];
+    FOR(i, j)
+    Bnn += -dbetadphi * vars.chi * one_over_lapse * h_UU[i][j] * d1.lapse[i] *
+           d1.phi[j];
 
     Tensor<2, data_t> Btensor_TF = Btensor;
     make_trace_free(Btensor_TF, vars.h, h_UU);
 
     double G_factor = 8. * M_PI * m_G_Newton;
     out.S = (out.S + 4. * Bscalar - 6 * Bnn) / (1. - 2. * G_factor * beta);
-    FOR(i, j) out.Sij_TF[i][j] = (out.Sij_TF[i][j] - Btensor_TF[i][j]) / (1. - 2. * G_factor * beta);
+    FOR(i, j)
+    out.Sij_TF[i][j] =
+        (out.Sij_TF[i][j] - Btensor_TF[i][j]) / (1. - 2. * G_factor * beta);
 
     return out;
 }
@@ -601,7 +613,8 @@ void FourDerivScalarTensor<coupling_and_potential_t>::add_theory_rhs(
 
     // compute coupling and potential
     my_coupling_and_potential.compute_coupling_and_potential(
-        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi, dVdphi, vars, coords);
+        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi,
+        dVdphi, vars, coords);
 
     using namespace TensorAlgebra;
 
@@ -737,8 +750,9 @@ void FourDerivScalarTensor<coupling_and_potential_t>::add_theory_rhs(
             (covd_Aphys_times_chi[j][k][i] - covd_Aphys_times_chi[i][j][k]);
     }
 
-    data_t Zbeta_times_lapse = vars.lapse * (M + 2. * tr_A2 + 2. / 3. * vars.K * vars.K) +
-                        2. * (advec.K - tr_covd2lapse);
+    data_t Zbeta_times_lapse =
+        vars.lapse * (M + 2. * tr_A2 + 2. / 3. * vars.K * vars.K) +
+        2. * (advec.K - tr_covd2lapse);
 
     rhs.Pi += dfdphi * RGB_times_lapse - dbetadphi * Zbeta_times_lapse;
     rhs.Pi += -vars.lapse * dVdphi;
@@ -815,7 +829,8 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
 
     // compute coupling and potential
     my_coupling_and_potential.compute_coupling_and_potential(
-        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi, dVdphi, vars, coords);
+        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi,
+        dVdphi, vars, coords);
 
     using namespace TensorAlgebra;
 
@@ -922,8 +937,10 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
 
         LHS_mat[N - 2][idx] =
             2. * G_factor * vars.chi / 3. *
-            (-Omega_ij_TF[i][j] + 16. * dfdphi / (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi)) * Mij_TF[i][j] * (dfdphi * M - 
-				      1.5 * dbetadphi / (1. - 2. * G_factor * beta)));
+            (-Omega_ij_TF[i][j] +
+             16. * dfdphi / (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi)) *
+                 Mij_TF[i][j] *
+                 (dfdphi * M - 1.5 * dbetadphi / (1. - 2. * G_factor * beta)));
 
         LHS_mat[idx][N - 2] =
             G_factor * (Omega_ij_TF_UU_over_chi[i][j] -
@@ -936,8 +953,11 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
     }
 
     LHS_mat[N - 2][N - 2] =
-        1. + 2. * G_factor / 3. * (-Omega + 4. * dfdphi / (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi)) * M * (dfdphi * M - 
-					1.5 * dbetadphi / (1. - 2. * G_factor * beta)));
+        1. +
+        2. * G_factor / 3. *
+            (-Omega +
+             4. * dfdphi / (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi)) * M *
+                 (dfdphi * M - 1.5 * dbetadphi / (1. - 2. * G_factor * beta)));
 
     idx = 0;
     FOR(i, j)
@@ -951,7 +971,8 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
             LHS_mat[idx][N - 1] += -2. * dfdphi * Mij_TF_UU_over_chi[j][i];
         ++idx;
     }
-    LHS_mat[N - 1][N - 2] = 3. * G_factor * dbetadphi / (1. - 2. * G_factor * beta);
+    LHS_mat[N - 1][N - 2] =
+        3. * G_factor * dbetadphi / (1. - 2. * G_factor * beta);
     LHS_mat[N - 2][N - 1] = -2. * dbetadphi + dfdphi * M / 3.;
     LHS_mat[N - 1][N - 1] = 1. + g2 * (2. * vars.Pi * vars.Pi - Vt);
 
@@ -1038,7 +1059,8 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_all_rhos(
 
     // compute coupling and potential
     my_coupling_and_potential.compute_coupling_and_potential(
-        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi, dVdphi, vars, coords);
+        dfdphi, d2fdphi2, g2, dg2dphi, beta, dbetadphi, d2betadphi2, V_of_phi,
+        dVdphi, vars, coords);
 
     using namespace TensorAlgebra;
     const auto h_UU = compute_inverse_sym(vars.h);

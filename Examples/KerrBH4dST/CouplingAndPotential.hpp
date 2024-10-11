@@ -13,10 +13,11 @@ class CouplingAndPotential
   public:
     struct params_t
     {
-        double lambda_GB;        // Gauss-Bonnet coupling
-        /*double quadratic_factor; // phi^2 factor in the GB exponential coupling
-        double quartic_factor;   // phi^4 factor in the GB exponential coupling*/
-	double beta_ricci;
+        double lambda_GB; // Gauss-Bonnet coupling
+        /*double quadratic_factor; // phi^2 factor in the GB exponential
+        coupling double quartic_factor;   // phi^4 factor in the GB exponential
+        coupling*/
+        double beta_ricci;
         double cutoff_GB;   // cutoff for switching off the Gauss-Bonnet terms
                             // inside the BH
         double factor_GB;   // factor for the function smoothening the GB cutoff
@@ -34,8 +35,9 @@ class CouplingAndPotential
     template <class data_t, template <typename> class vars_t>
     void compute_coupling_and_potential(data_t &dfdphi, data_t &d2fdphi2,
                                         data_t &g2, data_t &dg2dphi,
-					data_t &beta, data_t &dbetadphi, data_t &d2betadphi2,
-                                        data_t &V_of_phi, data_t &dVdphi,
+                                        data_t &beta, data_t &dbetadphi,
+                                        data_t &d2betadphi2, data_t &V_of_phi,
+                                        data_t &dVdphi,
                                         const vars_t<data_t> &vars,
                                         const Coordinates<data_t> &coords) const
     {
@@ -64,7 +66,7 @@ class CouplingAndPotential
                  (1. + 2. * m_params.quartic_factor * vars.phi * vars.phi) *
                  (1. + 2. * m_params.quartic_factor * vars.phi * vars.phi));*/
 
-	// The first derivative of the GB coupling function
+        // The first derivative of the GB coupling function
         dfdphi = m_params.lambda_GB / cutoff_factor * vars.phi;
         // The second derivative of the GB coupling function
         d2fdphi2 = m_params.lambda_GB / cutoff_factor;
