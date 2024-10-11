@@ -16,6 +16,7 @@ class CouplingAndPotential
     {
         double lambda_GB;   // Gauss-Bonnet coupling
         double g2;          // coupling to the square of the kinetic term
+	double beta_ricci;
         double cutoff_GB;   // cutoff for switching off the Gauss-Bonnet terms
                             // inside the BH
         double factor_GB;   // factor for the function smoothening the GB cutoff
@@ -33,6 +34,7 @@ class CouplingAndPotential
     template <class data_t, template <typename> class vars_t>
     void compute_coupling_and_potential(data_t &dfdphi, data_t &d2fdphi2,
                                         data_t &g2, data_t &dg2dphi,
+					data_t &beta, data_t &dbetadphi, data_t &d2betadphi2,
                                         data_t &V_of_phi, data_t &dVdphi,
                                         const vars_t<data_t> &vars,
                                         const Coordinates<data_t> &coords) const
@@ -45,9 +47,14 @@ class CouplingAndPotential
         // Shift-symmetric coupling: f(\phi) = \lambda^{GB}\phi
 
         // The first derivative of the GB coupling function
-        dfdphi = m_params.lambda_GB / cutoff_factor;
+        dfdphi = m_params.lambda_GB / cutoff_factor * vars.phi;
         // The second derivative of the GB coupling function
-        d2fdphi2 = 0.;
+        d2fdphi2 = m_params.lambda_GB / cutoff_factor;
+	
+	beta = 0.5 * m_params.beta_ricci * vars.phi * vars.phi;
+	dbetadphi = m_params.beta_ricci * vars.phi;
+	d2betadphi2 = m_params.beta_ricci;
+
         // The coupling to the square of the kinetic term
         g2 = m_params.g2;
         // The first derivative of the g2 coupling

@@ -156,8 +156,9 @@ b0 = 0.4
 lambda_GB = -10.
 cutoff_GB = 0.05 # excision with chi; dependent on the spin (see fig. C1 in arXiv:2112.10567)
 factor_GB = 100.0
-quadratic_factor = 200.
-quartic_factor = 0.
+#quadratic_factor = 200.
+#quartic_factor = 0.
+beta_ricci = 1.
 
 # coefficient for KO numerical dissipation
 sigma = 2.0

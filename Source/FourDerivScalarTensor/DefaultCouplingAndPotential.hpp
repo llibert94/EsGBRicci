@@ -20,6 +20,7 @@ class DefaultCouplingAndPotential
     template <class data_t, template <typename> class vars_t>
     void compute_coupling_and_potential(data_t &dfdphi, data_t &d2fdphi2,
                                         data_t &g2, data_t &dg2dphi,
+					data_t &beta, data_t &dbetadphi, data_t &d2betadphi2,
                                         data_t &V_of_phi, data_t &dVdphi,
                                         const vars_t<data_t> &vars,
                                         const Coordinates<data_t> &coords) const
@@ -32,6 +33,11 @@ class DefaultCouplingAndPotential
         g2 = 0.;
         // The first derivative of the g2 coupling
         dg2dphi = 0.;
+
+	beta = 0.;
+	dbetadphi = 0.;
+	d2betadphi2 = 0;
+
         // The potential of the scalar field
         V_of_phi = 0.;
         // The first derivative of the potential
