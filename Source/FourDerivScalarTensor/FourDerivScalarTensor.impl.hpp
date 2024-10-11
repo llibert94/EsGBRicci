@@ -914,8 +914,6 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
         ++row;
     }
 
-    data_t constant = 1.; // calculate it !!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     int idx = 0;
     FOR(i, j)
     {
@@ -924,7 +922,7 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
 
         LHS_mat[N - 2][idx] =
             2. * G_factor * vars.chi / 3. *
-            (-Omega_ij_TF[i][j] + 16. * dfdphi * Mij_TF[i][j] * (dfdphi * M - 
+            (-Omega_ij_TF[i][j] + 16. * dfdphi / (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi)) * Mij_TF[i][j] * (dfdphi * M - 
 				      1.5 * dbetadphi / (1. - 2. * G_factor * beta)));
 
         LHS_mat[idx][N - 2] =
@@ -938,7 +936,7 @@ void FourDerivScalarTensor<coupling_and_potential_t>::compute_lhs(
     }
 
     LHS_mat[N - 2][N - 2] =
-        1. + 2. * G_factor / 3. * (-Omega + 4. * dfdphi * M * (dfdphi * M - 
+        1. + 2. * G_factor / 3. * (-Omega + 4. * dfdphi / (1. + g2 * (-Vt + 2. * vars.Pi * vars.Pi)) * M * (dfdphi * M - 
 					1.5 * dbetadphi / (1. - 2. * G_factor * beta)));
 
     idx = 0;
