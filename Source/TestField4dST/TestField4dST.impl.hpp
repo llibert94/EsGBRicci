@@ -445,6 +445,8 @@ AllRhos<data_t> TestField4dST<coupling_and_potential_t>::compute_all_rhos(
 
     out.g3 = 0.;
 
+    out.total = out.GB + out.phi + out.g2;
+
     return out;
 }
 

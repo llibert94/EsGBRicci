@@ -49,6 +49,8 @@ class SimulationParameters : public ModifiedGravitySimulationParametersBase<
         // Initial data
         pp.load("G_Newton", G_Newton, 1.0);
 
+        pp.load("expand_matrix", expand_matrix, 0);
+
         // Initial scalar field data
         initial_params.center = center;
         pp.load("scalar_amplitude", initial_params.amplitude, 0.);
@@ -86,6 +88,7 @@ class SimulationParameters : public ModifiedGravitySimulationParametersBase<
 
     bool calculate_diagnostic_norms;
     double G_Newton;
+    int expand_matrix;
     InitialScalarData::params_t initial_params;
     CouplingAndPotential::params_t coupling_and_potential_params;
     KerrBH::params_t kerr_params;

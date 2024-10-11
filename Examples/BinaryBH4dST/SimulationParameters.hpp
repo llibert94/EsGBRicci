@@ -50,6 +50,8 @@ class SimulationParameters : public ModifiedGravitySimulationParametersBase<
         // Initial data
         pp.load("G_Newton", G_Newton, 1.0);
 
+        pp.load("expand_matrix", expand_matrix, 0);
+
         // Initial scalar field data
         initial_params.center =
             center; // already read in SimulationParametersBase
@@ -130,6 +132,7 @@ class SimulationParameters : public ModifiedGravitySimulationParametersBase<
 
     // Collection of parameters necessary for initial conditions
     double G_Newton;
+    int expand_matrix;
     InitialScalarData::params_t initial_params;
     CouplingAndPotential::params_t coupling_and_potential_params;
     BoostedBH::params_t bh2_params;

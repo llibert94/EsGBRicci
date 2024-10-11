@@ -1016,7 +1016,31 @@ void FourDerivScalarTensor<coupling_and_potential_t>::solve_lhs(
     RHS[N - 2] = rhs.K;
     RHS[N - 1] = rhs.Pi;
 
-    solve_linear_system(N, (&LHS[0][0]), RHS);
+    if (m_expand_matrix > 0)
+    {
+        data_t LHS_mat[N][N];
+        data_t RHS_sol[N];
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < N; ++j)
+                LHS_mat[i][j] = LHS[i][j];
+        for (int i = 0; i < N; ++i)
+            LHS_mat[i][i] -= 1.;
+        for (int i = 0; i < N; ++i)
+        {
+            RHS_sol[i] = RHS[i];
+            for (int j = 0; j < N; ++j)
+            {
+                RHS_sol[i] += -LHS_mat[i][j] * RHS[j];
+                if (m_expand_matrix > 1)
+                    for (int k = 0; k < N; ++k)
+                        RHS_sol[i] += LHS_mat[i][j] * LHS_mat[j][k] * RHS[k];
+            }
+        }
+        for (int i = 0; i < N; ++i)
+            RHS[i] = RHS_sol[i];
+    }
+    else
+        solve_linear_system(N, (&LHS[0][0]), RHS);
 
     row = 0;
     FOR(i1, j1)
@@ -1093,6 +1117,10 @@ FourDerivScalarTensor<coupling_and_potential_t>::compute_all_rhos(
     FOR(i, j) out.GB -= 2. * Mij[i][j] * Omega_ij_UU[i][j];
 
     out.g3 = 0.;
+
+    RhoAndSi<data_t> rho_and_Si = compute_rho_and_Si(vars, d1, d2, coords);
+    out.total = rho_and_Si.rho;
+    ;
 
     return out;
 }

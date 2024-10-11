@@ -57,8 +57,8 @@ void KerrBH4dSTLevel::initialData()
     // Diagnostics needed for AHFinder
     CouplingAndPotential coupling_and_potential(
         m_p.coupling_and_potential_params);
-    FourDerivScalarTensorWithCouplingAndPotential fdst(coupling_and_potential,
-                                                       m_p.G_Newton);
+    FourDerivScalarTensorWithCouplingAndPotential fdst(
+        coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
     ModifiedGravityConstraints<FourDerivScalarTensorWithCouplingAndPotential>
         constraints(fdst, m_dx, m_p.center, m_p.G_Newton, c_Ham,
                     Interval(c_Mom1, c_Mom3));
@@ -78,8 +78,8 @@ void KerrBH4dSTLevel::prePlotLevel()
 
     CouplingAndPotential coupling_and_potential(
         m_p.coupling_and_potential_params);
-    FourDerivScalarTensorWithCouplingAndPotential fdst(coupling_and_potential,
-                                                       m_p.G_Newton);
+    FourDerivScalarTensorWithCouplingAndPotential fdst(
+        coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
     fillAllGhosts();
     ModifiedGravityConstraints<FourDerivScalarTensorWithCouplingAndPotential>
         constraints(fdst, m_dx, m_p.center, m_p.G_Newton, c_Ham,
@@ -100,8 +100,8 @@ void KerrBH4dSTLevel::specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
     // FourDerivScalarTensor
     CouplingAndPotential coupling_and_potential(
         m_p.coupling_and_potential_params);
-    FourDerivScalarTensorWithCouplingAndPotential fdst(coupling_and_potential,
-                                                       m_p.G_Newton);
+    FourDerivScalarTensorWithCouplingAndPotential fdst(
+        coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
     ModifiedPunctureGauge modified_puncture_gauge(m_p.modified_ccz4_params);
     if (m_p.max_spatial_derivative_order == 4)
     {
@@ -156,8 +156,8 @@ void KerrBH4dSTLevel::specificPostTimeStep()
     fillAllGhosts();
     CouplingAndPotential coupling_and_potential(
         m_p.coupling_and_potential_params);
-    FourDerivScalarTensorWithCouplingAndPotential fdst(coupling_and_potential,
-                                                       m_p.G_Newton);
+    FourDerivScalarTensorWithCouplingAndPotential fdst(
+        coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
     ModifiedPunctureGauge modified_puncture_gauge(m_p.modified_ccz4_params);
     RhoDiagnostics<FourDerivScalarTensorWithCouplingAndPotential>
         rho_diagnostics(fdst, m_dx, m_p.center);

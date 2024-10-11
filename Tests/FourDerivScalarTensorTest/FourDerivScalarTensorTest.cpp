@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         m_coupling_and_potential_params);
     double G_Newton = 1. / (16. * M_PI);
     FourDerivScalarTensor<CouplingAndPotential> fdst(coupling_and_potential,
-                                                     G_Newton);
+                                                     G_Newton, 1);
     MyModifiedGravityClass my_modified_ccz4(fdst, m_modified_ccz4_params,
                                             modified_puncture_gauge, dx, sigma,
                                             {0., 0., 0.}, G_Newton);

@@ -44,15 +44,16 @@ class FourDerivScalarTensor
     //! The local copy of the coupling
     coupling_and_potential_t my_coupling_and_potential;
     double m_G_Newton;
+    int m_expand_matrix;
 
   public:
     //!  Constructor of class FourDerivScalarTensor, inputs are the theory
     //!  parameters.
     FourDerivScalarTensor(
         const coupling_and_potential_t a_coupling_and_potential,
-        double a_G_Newton = 1.0)
+        double a_G_Newton = 1.0, int a_expand_matrix = 0)
         : my_coupling_and_potential(a_coupling_and_potential),
-          m_G_Newton(a_G_Newton)
+          m_G_Newton(a_G_Newton), m_expand_matrix(a_expand_matrix)
     {
     }
 

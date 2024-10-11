@@ -69,8 +69,8 @@ void BinaryBH4dSTLevel::specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
     // FourDerivScalarTensor
     CouplingAndPotential coupling_and_potential(
         m_p.coupling_and_potential_params);
-    FourDerivScalarTensorWithCouplingAndPotential fdst(coupling_and_potential,
-                                                       m_p.G_Newton);
+    FourDerivScalarTensorWithCouplingAndPotential fdst(
+        coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
     ModifiedPunctureGauge modified_puncture_gauge(m_p.modified_ccz4_params);
     if (m_p.max_spatial_derivative_order == 4)
     {
@@ -151,7 +151,7 @@ void BinaryBH4dSTLevel::specificPostTimeStep()
             CouplingAndPotential coupling_and_potential(
                 m_p.coupling_and_potential_params);
             FourDerivScalarTensorWithCouplingAndPotential fdst(
-                coupling_and_potential, m_p.G_Newton);
+                coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
             ModifiedPunctureGauge modified_puncture_gauge(
                 m_p.modified_ccz4_params);
             ModifiedGravityWeyl4<FourDerivScalarTensorWithCouplingAndPotential,
@@ -199,7 +199,7 @@ void BinaryBH4dSTLevel::specificPostTimeStep()
         CouplingAndPotential coupling_and_potential(
             m_p.coupling_and_potential_params);
         FourDerivScalarTensorWithCouplingAndPotential fdst(
-            coupling_and_potential, m_p.G_Newton);
+            coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
         fillAllGhosts();
         BoxLoops::loop(ModifiedGravityConstraints<
                            FourDerivScalarTensorWithCouplingAndPotential>(
@@ -257,7 +257,7 @@ void BinaryBH4dSTLevel::prePlotLevel()
         CouplingAndPotential coupling_and_potential(
             m_p.coupling_and_potential_params);
         FourDerivScalarTensorWithCouplingAndPotential fdst(
-            coupling_and_potential, m_p.G_Newton);
+            coupling_and_potential, m_p.G_Newton, m_p.expand_matrix);
         ModifiedGravityConstraints<
             FourDerivScalarTensorWithCouplingAndPotential>
             constraints(fdst, m_dx, m_p.center, m_p.G_Newton, c_Ham,
