@@ -23,6 +23,8 @@
 #include "SixthOrderDerivatives.hpp"
 #include "SmallDataIO.hpp"
 #include "TraceARemoval.hpp"
+#include "TwoPuncturesBoxTaggingCriterion.hpp"
+#include "TwoPuncturesBoxExtractionTaggingCriterion.hpp"
 #include "TwoPuncturesInitialData.hpp"
 #include "WeylExtraction.hpp"
 
@@ -46,6 +48,15 @@ void BinaryBH4dSTLevel::initialData()
     CH_TIME("BinaryBH4dSTLevel::initialData");
     if (m_verbosity)
         pout() << "BinaryBH4dSTLevel::initialData " << m_level << endl;
+#ifdef USE_TWOPUNCTURES
+    TwoPuncturesInitialData two_punctures_initial_data(
+        m_dx, m_p.center, m_tp_amr.m_two_punctures);
+    // Can't use simd with this initial data
+    BoxLoops::loop(make_compute_pack(SetValue(0.), two_punctures_initial_data,
+                            InitialScalarData(m_p.initial_params, m_dx)), m_state_new, m_state_new,
+                   INCLUDE_GHOST_CELLS, disable_simd());
+#else
+
     // Set up the compute class for the BinaryBH initial data
     BinaryBH binary(m_p.bh1_params, m_p.bh2_params, m_dx);
 
@@ -55,6 +66,7 @@ void BinaryBH4dSTLevel::initialData()
         make_compute_pack(SetValue(0.), binary,
                           InitialScalarData(m_p.initial_params, m_dx)),
         m_state_new, m_state_new, INCLUDE_GHOST_CELLS);
+#endif
 }
 
 // Calculate RHS during RK4 substeps
@@ -103,7 +115,7 @@ void BinaryBH4dSTLevel::specificUpdateODE(GRLevelData &a_soln,
 void BinaryBH4dSTLevel::preTagCells()
 {
     // We only use chi in the tagging criterion so only fill the ghosts for chi
-    fillAllGhosts(VariableType::evolution, Interval(c_chi, c_chi));
+    // fillAllGhosts(VariableType::evolution, Interval(c_chi, c_chi));
 }
 
 // specify the cells to tag
@@ -113,14 +125,24 @@ void BinaryBH4dSTLevel::computeTaggingCriterion(FArrayBox &tagging_criterion,
     if (m_p.track_punctures)
     {
         std::vector<double> puncture_masses;
+#ifdef USE_TWOPUNCTURES
+        // use calculated bare masses from TwoPunctures
+        puncture_masses = {m_tp_amr.m_two_punctures.mm,
+                           m_tp_amr.m_two_punctures.mp};
+#else
         puncture_masses = {m_p.bh1_params.mass, m_p.bh2_params.mass};
-        auto puncture_coords =
+#endif        
+	auto puncture_coords =
             m_bh_amr.m_puncture_tracker.get_puncture_coords();
-        BoxLoops::loop(ChiPunctureExtractionTaggingCriterion(
+        /*BoxLoops::loop(ChiPunctureExtractionTaggingCriterion(
                            m_dx, m_level, m_p.max_level, m_p.extraction_params,
                            puncture_coords, m_p.activate_extraction,
                            m_p.track_punctures, puncture_masses),
-                       current_state, tagging_criterion);
+                       current_state, tagging_criterion);*/
+	BoxLoops::loop(TwoPuncturesBoxExtractionTaggingCriterion(
+                           m_dx, m_level, m_p.max_level, m_p.extraction_params,
+                           puncture_coords, m_p.activate_extraction, puncture_masses),
+                        current_state, tagging_criterion);
     }
     else
     {
