@@ -97,7 +97,7 @@ class SimulationParameters : public ModifiedGravitySimulationParametersBase<
 #endif
     }
 
- #ifdef USE_TWOPUNCTURES
+#ifdef USE_TWOPUNCTURES
     void read_tp_params(GRParmParse &pp)
     {
         tp_params.verbose = (verbosity > 0);
