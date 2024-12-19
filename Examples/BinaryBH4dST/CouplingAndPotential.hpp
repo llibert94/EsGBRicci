@@ -20,7 +20,9 @@ class CouplingAndPotential
         double cutoff_GB;   // cutoff for switching off the Gauss-Bonnet terms
                             // inside the BH
         double factor_GB;   // factor for the function smoothening the GB cutoff
-        double scalar_mass; // mass in the potential
+	double scalar_mass; // mass in the potential
+	double quadratic_factor; // see arxiv 2306.14966 eq 65
+	double quartic_factor;   // see arxiv 2306.14966 eq 65 
     };
 
   private:
@@ -48,9 +50,21 @@ class CouplingAndPotential
         // Shift-symmetric coupling: f(\phi) = \lambda^{GB}\phi
 
         // The first derivative of the GB coupling function
-        dfdphi = m_params.lambda_GB / cutoff_factor * vars.phi;
+        //dfdphi = m_params.lambda_GB / cutoff_factor * vars.phi;
+	  dfdphi = m_params.lambda_GB / cutoff_factor *
+                 exp(-m_params.quadratic_factor * vars.phi * vars.phi *
+                     (1. + m_params.quartic_factor * vars.phi * vars.phi)) *
+                 vars.phi *
+                 (1. + 2. * m_params.quartic_factor * vars.phi * vars.phi);
         // The second derivative of the GB coupling function
-        d2fdphi2 = m_params.lambda_GB / cutoff_factor;
+        //d2fdphi2 = m_params.lambda_GB / cutoff_factor;
+	  d2fdphi2  = m_params.lambda_GB / cutoff_factor *
+            exp(-m_params.quadratic_factor * vars.phi * vars.phi *
+                (1. + m_params.quartic_factor * vars.phi * vars.phi)) *
+            (1. + 3. * m_params.quartic_factor * vars.phi * vars.phi -
+             2. * m_params.quadratic_factor * vars.phi * vars.phi *
+                 (1. + 2. * m_params.quartic_factor * vars.phi * vars.phi) *
+                 (1. + 2. * m_params.quartic_factor * vars.phi * vars.phi));
 
         beta = 0.5 * m_params.beta_ricci * vars.phi * vars.phi;
         dbetadphi = m_params.beta_ricci * vars.phi;
